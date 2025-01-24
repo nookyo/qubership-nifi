@@ -1,0 +1,2 @@
+org.qubership.nifi.processors.PutSQLRecord
+org.qubership.nifi.processors.PostgreSQLBulkLoader

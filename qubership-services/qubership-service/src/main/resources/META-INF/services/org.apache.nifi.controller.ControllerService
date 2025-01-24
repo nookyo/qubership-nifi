@@ -1,0 +1,4 @@
+org.qubership.nifi.service.OraclePreparedStatementWithArrayProvider
+org.qubership.nifi.service.PostgresPreparedStatementWithArrayProvider
+org.qubership.nifi.service.validation.JsonContentValidator
+org.qubership.nifi.service.QubershipPrometheusRecordSink

@@ -1,0 +1,18 @@
+{
+  "keyStore" : "${NIFI_KEYSTORE_DIR}/server-keystore.jks",
+  "keyStoreType" : "jks",
+  "token" : "",
+  "dn" : "CN=${HOSTNAME}.${NAMESPACE}${NIFI_ADDITIONAL_DN}",
+  "port" : 8080,
+  "caHostname" : "nifi-tls-gen-service.${NAMESPACE}",
+  "trustStore" : "${NIFI_KEYSTORE_DIR}/truststore.jks",
+  "trustStoreType" : "jks",
+  "days" : 730,
+  "keySize" : 2048,
+  "keyPairAlgorithm" : "RSA",
+  "signingAlgorithm" : "SHA256WITHRSA",
+"domainAlternativeNames" : [ "0.0.0.0", "${HOSTNAME_CLUSTER}", "${HOSTNAME}", "${HOSTNAME}.${MICROSERVICE_NAME}", "${MICROSERVICE_NAME}", "${MICROSERVICE_NAME}.${NAMESPACE}", "${NIFI_WEB_PROXY_HOST_CERTIFICATE}" ${NIFI_ADDITIONAL_SAN} ],
+  "keyStorePassword" : "${KEYSTORE_PASSWORD}",
+  "keyPassword" : "${KEYSTORE_PASSWORD}",
+  "trustStorePassword" : "${TRUSTSTORE_PASSWORD}"
+}
