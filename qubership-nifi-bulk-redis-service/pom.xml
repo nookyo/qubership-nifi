@@ -36,7 +36,6 @@
         <derby.version>10.14.2.0</derby.version>
         <jackson.version>2.13.2</jackson.version>
         <jackson.databind.version>2.13.2.1</jackson.databind.version>
-        <testcontainers.version>1.12.5</testcontainers.version>
     </properties>
 
     <modules>
