@@ -25,6 +25,11 @@ on:
       #   type: boolean
       #   default: true
       #   description: 'Upload artifact'
+      dry-run:
+        required: false
+        type: boolean
+        default: false
+        description: 'Dry run'
 
 jobs:
   check-tag:
@@ -131,7 +136,7 @@ jobs:
     with:
       ref: ${{ github.event.inputs.version }}
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
-      dry-run: false
+      dry-run: true
 
   github-release:
     needs: [tag]
