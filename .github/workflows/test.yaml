@@ -1,0 +1,66 @@
+name: Maven Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      maven_command:
+        required: false
+        type: string
+        default: "--batch-mode deploy"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Debug pom.xml
+        run: cat pom.xml
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          server-id: github
+          server-username: GIT_MVN_USER
+          server-password: GIT_MVN_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE }}
+          gpg-passphrase:  GPG_PHRASE
+
+      - name: Display settings.xml
+        run: cat ~/.m2/settings.xml
+
+      - name: Sign and Deploy jar to Maven Central
+        run: mvn --batch-mode deploy
+        env:
+          GIT_MVN_USER: ${{ secrets.GIT_MVN_USER }}
+          GIT_MVN_TOKEN: ${{ secrets.GIT_MVN_TOKEN }}
+          GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+
+      # - name: Cache Maven dependencies
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.m2
+      #     key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-maven-
+
+    #   - name: Sign and Deploy jar to Maven Central
+    #     run: mvn ${{ inputs.maven_command }}
+    #     env:
+    #       MAVEN_USERNAME: ${{ secrets.GIT_MVN_USER }}
+    #       MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    #       MAVEN_GPG_PASSPHRASE: ${{ secrets.maven_gpg_passphrase }}

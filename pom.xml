@@ -22,9 +22,13 @@
     <artifactId>nifi</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
-    
+
     <properties>
+<<<<<<< HEAD
+        <revision>1.0.0</revision>
+=======
         <revision>1.0.1</revision>
+>>>>>>> 784391c4f26a915e613b64e1ce0eb3b87918ed6b
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>15</maven.compiler.source>
         <maven.compiler.target>15</maven.compiler.target>
@@ -64,8 +68,16 @@
         <module>qubership-nifi-lookup-services</module>
         <module>qubership-nifi-deps</module>
         <module>qubership-consul</module>
-        <module>qubership-assembly</module>
     </modules>
+
+    <distributionManagement>
+            <repository>
+                <id>github</id>
+                <name>GitHub OWNER Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/nookyo/qubership-nifi</url>
+            </repository>
+    </distributionManagement>
+
 
     <reporting>
         <plugins>
@@ -239,6 +251,7 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
     </build>
 
 </project>
