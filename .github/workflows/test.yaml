@@ -1,4 +1,4 @@
-name: Maven Publish
+name: Test
 
 on:
   workflow_dispatch:
