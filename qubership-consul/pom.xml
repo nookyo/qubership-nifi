@@ -27,6 +27,14 @@
         <module>qubership-consul-application</module>
     </modules>
 
+    <distributionManagement>
+            <repository>
+                <id>github</id>
+                <name>GitHub OWNER Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/nookyo/qubership-nifi</url>
+            </repository>
+    </distributionManagement> 
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
