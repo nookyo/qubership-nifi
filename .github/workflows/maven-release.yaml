@@ -122,7 +122,7 @@ jobs:
     needs: [update-pom-version, tag]
     uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
     with:
-      maven_command: ${{ (github.event.inputs.dry-run == 'true' && '--batch-mode package') || '--batch-mode deploy' }}
+      maven_command: ${{ (github.event.inputs.dry-run == 'true' && '--batch-mode package') || '-X --batch-mode deploy' }}
       java_version: ${{ github.event.inputs.java_version }}
       version: ${{ github.event.inputs.version }}
       upload-artifact: false
