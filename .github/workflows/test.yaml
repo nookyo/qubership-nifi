@@ -43,12 +43,12 @@ jobs:
       - name: Display settings.xml
         run: cat ~/.m2/settings.xml
 
-      - name: Sign and Deploy jar to Maven Central
-        run: mvn --batch-mode deploy
-        env:
-          # GIT_MVN_USER: ${{ github.actor }}
-          GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+      # - name: Sign and Deploy jar to Maven Central
+      #   run: mvn --batch-mode deploy
+      #   env:
+      #     # GIT_MVN_USER: ${{ github.actor }}
+      #     GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
 
 
   mvn-build:
