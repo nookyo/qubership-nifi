@@ -49,6 +49,17 @@ jobs:
           # GIT_MVN_USER: ${{ github.actor }}
           GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+  mvn-build:
+      uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+      with:
+        maven_command: "--batch-mode package"
+        java_version: 21
+        version: '1.0.0'
+      secrets:
+        maven_username: ${{ github.actor }}
+        maven_password: ${{ secrets.GITHUB_TOKEN }}
+        maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
+        maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
 
       # - name: Cache Maven dependencies
       #   uses: actions/cache@v3
