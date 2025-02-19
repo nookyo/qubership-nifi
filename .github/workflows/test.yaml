@@ -59,7 +59,7 @@ jobs:
         server_id: github
       secrets:
         maven_username: ${{ github.actor }}
-        maven_password: ${{ secrets.GIT_MVN_TOKEN }}
+        maven_password: ${{ secrets.GITHUB_TOKEN }}
         maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
         maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
 
