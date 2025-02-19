@@ -124,7 +124,7 @@ jobs:
     with:
       maven_command: ${{ (github.event.inputs.dry-run == 'true' && '--batch-mode package') || '-X --batch-mode deploy' }}
       java_version: ${{ github.event.inputs.java_version }}
-      version: ${{ github.event.inputs.version }}
+      server_id: github
       upload-artifact: false
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
     secrets:
