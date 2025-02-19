@@ -35,7 +35,7 @@ jobs:
           java-version: 21
           distribution: 'temurin'
           server-id: github
-          server-username: GIT_MVN_USER
+          # server-username: GIT_MVN_USER
           server-password: GIT_MVN_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE }}
           gpg-passphrase:  GPG_PHRASE
