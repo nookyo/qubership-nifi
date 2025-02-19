@@ -94,10 +94,10 @@ jobs:
       upload-artifact: true
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
     secrets:
-      maven_username: ${{ secrets.MAVEN_USER }}
-      maven_password: ${{ secrets.MAVEN_PASSWORD }}
-      maven_gpg_passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-      maven_gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+      maven_username: ${{ github.actor }}
+      maven_password: ${{ secrets.GIT_MVN_TOKEN }}
+      maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
+      maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
 
   tests:
     needs: [mvn-build]
@@ -125,10 +125,10 @@ jobs:
       upload-artifact: false
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
     secrets:
-      maven_username: ${{ secrets.MAVEN_USER }}
-      maven_password: ${{ secrets.MAVEN_PASSWORD }}
-      maven_gpg_passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-      maven_gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+      maven_username: ${{ github.actor }}
+      maven_password: ${{ secrets.GIT_MVN_TOKEN }}
+      maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
+      maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
 
   docker-build-publish:
     needs: [update-pom-version, tag]

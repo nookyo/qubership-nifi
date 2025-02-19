@@ -46,7 +46,7 @@ jobs:
       - name: Sign and Deploy jar to Maven Central
         run: mvn --batch-mode deploy
         env:
-          # GIT_MVN_USER: ${{ secrets.GIT_MVN_USER }}
+          GIT_MVN_USER: ${{ github.actor }}
           GIT_MVN_TOKEN: ${{ secrets.GIT_MVN_TOKEN }}
           GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
 
