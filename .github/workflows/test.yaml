@@ -54,7 +54,7 @@ jobs:
   mvn-build:
       uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
       with:
-        maven_command: "--batch-mode publish"
+        maven_command: "--batch-mode deploy"
         java_version: 21
       secrets:
         maven_username: ${{ github.actor }}
