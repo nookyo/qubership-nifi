@@ -54,7 +54,6 @@ jobs:
       with:
         maven_command: "--batch-mode publish"
         java_version: 21
-        version: '1.0.0'
       secrets:
         maven_username: ${{ github.actor }}
         maven_password: ${{ secrets.GITHUB_TOKEN }}
