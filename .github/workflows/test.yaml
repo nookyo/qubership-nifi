@@ -43,25 +43,25 @@ jobs:
       - name: Display settings.xml
         run: cat ~/.m2/settings.xml
 
-      # - name: Sign and Deploy jar to Maven Central
-      #   run: mvn --batch-mode deploy
-      #   env:
-      #     # GIT_MVN_USER: ${{ github.actor }}
-      #     GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+      - name: Sign and Deploy jar to Maven Central
+        run: mvn --batch-mode deploy
+        env:
+          # GIT_MVN_USER: ${{ github.actor }}
+          GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
 
 
-  mvn-build:
-      uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
-      with:
-        maven_command: "--batch-mode deploy -Dgpg.skip=true"
-        java_version: 21
-        server_id: github
-      secrets:
-        maven_username: ${{ github.actor }}
-        maven_password: ${{ secrets.GITHUB_TOKEN }}
-        maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
-        maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
+  # mvn-build:
+  #     uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+  #     with:
+  #       maven_command: "--batch-mode deploy -Dgpg.skip=true"
+  #       java_version: 21
+  #       server_id: github
+  #     secrets:
+  #       maven_username: ${{ github.actor }}
+  #       maven_password: ${{ secrets.GITHUB_TOKEN }}
+  #       maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
+  #       maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
 
       # - name: Cache Maven dependencies
       #   uses: actions/cache@v3
