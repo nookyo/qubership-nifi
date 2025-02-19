@@ -49,6 +49,8 @@ jobs:
           # GIT_MVN_USER: ${{ github.actor }}
           GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+
+
   mvn-build:
       uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
       with:
