@@ -9,59 +9,59 @@ on:
         default: "--batch-mode deploy"
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # publish:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Debug pom.xml
-        run: cat pom.xml
+  #     - name: Debug pom.xml
+  #       run: cat pom.xml
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'temurin'
-          server-id: github
-          # server-username: GIT_MVN_USER
-          server-password: GIT_MVN_TOKEN
-          gpg-private-key: ${{ secrets.GPG_PRIVATE }}
-          gpg-passphrase:  GPG_PHRASE
-
-      - name: Display settings.xml
-        run: cat ~/.m2/settings.xml
-
-      - name: Sign and Deploy jar to Maven Central
-        run: mvn --batch-mode deploy
-        env:
-          # GIT_MVN_USER: ${{ github.actor }}
-          GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+  #     - name: Cache Maven dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.m2
+  #         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-maven-
 
 
-  # mvn-build:
-  #     uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
-  #     with:
-  #       maven_command: "--batch-mode deploy -Dgpg.skip=true"
-  #       java_version: 21
-  #       server_id: github
-  #     secrets:
-  #       maven_username: ${{ github.actor }}
-  #       maven_password: ${{ secrets.GITHUB_TOKEN }}
-  #       maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
-  #       maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
+  #     - name: Set up JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: 21
+  #         distribution: 'temurin'
+  #         server-id: github
+  #         # server-username: GIT_MVN_USER
+  #         server-password: GIT_MVN_TOKEN
+  #         gpg-private-key: ${{ secrets.GPG_PRIVATE }}
+  #         gpg-passphrase:  GPG_PHRASE
+
+  #     - name: Display settings.xml
+  #       run: cat ~/.m2/settings.xml
+
+  #     - name: Sign and Deploy jar to Maven Central
+  #       run: mvn --batch-mode deploy
+  #       env:
+  #         # GIT_MVN_USER: ${{ github.actor }}
+  #         GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
+
+
+  mvn:
+      uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+      with:
+        maven_command: "--batch-mode deploy -Dgpg.skip=true"
+        java_version: 21
+        server_id: github
+      secrets:
+        # maven_username: ${{ github.actor }}
+        maven_password: ${{ secrets.GITHUB_TOKEN }}
+        # maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
+        # maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
 
       # - name: Cache Maven dependencies
       #   uses: actions/cache@v3
