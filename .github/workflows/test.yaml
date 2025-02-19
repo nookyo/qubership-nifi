@@ -52,7 +52,7 @@ jobs:
 
 
   mvn-build:
-      uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+      uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
       with:
         maven_command: "--batch-mode publish"
         java_version: 21
