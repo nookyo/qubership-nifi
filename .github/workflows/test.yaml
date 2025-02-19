@@ -47,7 +47,7 @@ jobs:
         run: mvn --batch-mode deploy
         env:
           GIT_MVN_USER: ${{ github.actor }}
-          GIT_MVN_TOKEN: ${{ secrets.GIT_MVN_TOKEN }}
+          GIT_MVN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_PHRASE: ${{ secrets.GPG_PHRASE }}
 
       # - name: Cache Maven dependencies
