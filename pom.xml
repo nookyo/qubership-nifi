@@ -73,7 +73,16 @@
                 <url>https://maven.pkg.github.com/nookyo/qubership-nifi</url>
             </repository>
     </distributionManagement>
-
+	
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/nookyo/qubership-nifi</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
     <reporting>
         <plugins>
@@ -235,6 +244,11 @@
                         <artifactId>pmd-core</artifactId>
                         <version>6.37.0</version>
                     </dependency>
+					<dependency>
+						<groupId>org.qubership.nifi</groupId>
+						<artifactId>qubership-nifi-common</artifactId>
+						<version>1.0.6-SNAPSHOT</version>
+					</dependency>
                 </dependencies>
             </plugin>
              <plugin>

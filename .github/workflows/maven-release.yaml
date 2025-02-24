@@ -91,16 +91,15 @@ jobs:
     needs: [update-pom-version]
     uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
     with:
-      maven_command: "--batch-mode package"
-      java_version: ${{ github.event.inputs.java_version }}
-      version: ${{ github.event.inputs.version }}
+      maven-command: "--batch-mode package"
+      java-version: ${{ github.event.inputs.java_version }}
       upload-artifact: true
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
     secrets:
-      maven_username: ${{ github.actor }}
-      maven_password: ${{ secrets.GITHUB_TOKEN }}
-      maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
-      maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
+      maven-username: ${{ github.actor }}
+      maven-password: ${{ secrets.GITHUB_TOKEN }}
+      gpg-passphrase: ${{ secrets.GPG_PHRASE }}
+      gpg-private-key: ${{ secrets.GPG_PRIVATE }}
 
   tests:
     needs: [mvn-build]
@@ -122,16 +121,16 @@ jobs:
     needs: [update-pom-version, tag]
     uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
     with:
-      maven_command: ${{ (github.event.inputs.dry-run == 'true' && '--batch-mode package') || '-X --batch-mode deploy -Dgpg.skip=true' }}
-      java_version: ${{ github.event.inputs.java_version }}
-      server_id: github
+      maven-command: ${{ (github.event.inputs.dry-run == 'true' && '--batch-mode package') || '-X --batch-mode deploy -Dgpg.skip=true' }}
+      java-version: ${{ github.event.inputs.java_version }}
+      server-id: github
       upload-artifact: false
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
     secrets:
-      maven_username: ${{ github.actor }}
-      maven_password: ${{ secrets.GITHUB_TOKEN }}
-      maven_gpg_passphrase: ${{ secrets.GPG_PHRASE }}
-      maven_gpg_private_key: ${{ secrets.GPG_PRIVATE }}
+      maven-username: ${{ github.actor }}
+      maven-password: ${{ secrets.GITHUB_TOKEN }}
+      gpg-passphrase: ${{ secrets.GPG_PHRASE }}
+      gpg-private-key: ${{ secrets.GPG_PRIVATE }}
 
   docker-build-publish:
     needs: [update-pom-version, tag]
