@@ -134,9 +134,9 @@ jobs:
 
   docker-build-publish:
     needs: [update-pom-version, tag]
-    uses: netcracker/qubership-workflow-hub/.github/workflows/docker-publish.yml@main
+    uses: nookyo/qubership-workflow-hub/.github/workflows/docker-publish.yml@main
     with:
-      ref: ${{ github.event.inputs.version }}
+      ref: v${{ github.event.inputs.version }}
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
       dry-run: ${{ inputs.dry-run }}
 
