@@ -64,7 +64,6 @@
         <module>qubership-nifi-lookup-services</module>
         <module>qubership-nifi-deps</module>
         <module>qubership-consul</module>
-        <module>qubership-assembly</module>
     </modules>
 
     <reporting>
@@ -92,6 +91,14 @@
         </profile>
     </profiles>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/netcracker/qubership-nifi</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -100,7 +107,7 @@
                 <version>${flatten-maven-plugin.version}</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <flattenMode>defaults</flattenMode>
                 </configuration>
                 <executions>
                     <execution>
@@ -228,6 +235,14 @@
                         <version>6.37.0</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.3</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
