@@ -141,10 +141,10 @@ jobs:
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
       server-id: "central"
     secrets:
-      maven-username: ${{ inputs.mode == 'github' && github.actor || secrets.MAVEN_USER }}
-      maven-token: ${{ inputs.mode == 'github' && github.GITHIB_TOKEN || secrets.MAVEN_PASSWORD }}
-      gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-      gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+      maven-username: ${{ inputs.mode == 'github' && github.actor || secrets.GIT_MVN_USER }}
+      maven-token: ${{ inputs.mode == 'github' && secrets.GITHUB_TOKEN || secrets.GIT_MVN_TOKEN }}
+      gpg-passphrase: ${{ secrets.GPG_PHRASE }}
+      gpg-private-key: ${{ secrets.GPG_PRIVATE }}
 
   check-dockerfile:
     runs-on: ubuntu-latest
