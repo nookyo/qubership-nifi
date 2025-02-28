@@ -139,7 +139,7 @@ jobs:
       java-version: ${{ github.event.inputs.java-version }}
       upload-artifact: false
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
-      server-id: "central"
+      server-id: ${{ inputs.mode }}
     secrets:
       maven-username: ${{ inputs.mode == 'github' && github.actor || secrets.GIT_MVN_USER }}
       maven-token: ${{ inputs.mode == 'github' && secrets.GITHUB_TOKEN || secrets.GIT_MVN_TOKEN }}
