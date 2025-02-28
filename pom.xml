@@ -112,6 +112,21 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+
+        <profile>
+            <id>github</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/nookyo/qubership-nifi</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
     </profiles>
 
     <distributionManagement>
@@ -120,6 +135,10 @@
             <name>Central Maven Repository</name>
         </repository>
     </distributionManagement>
+
+
+
+
 
     <build>
         <plugins>
