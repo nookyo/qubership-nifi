@@ -10,5 +10,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          curl -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/orgs/nookyo/packages/mvn/qubership-nifi/versions" > versions.json
+          curl -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/users/nookyo/packages?package_type=maven"
+        #   curl -H "Authorization: token $GITHUB_TOKEN" \
+        #   "https://api.github.com/orgs/nookyo/packages/mvn/qubership-nifi/versions" > versions.json
