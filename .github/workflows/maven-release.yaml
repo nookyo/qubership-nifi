@@ -37,10 +37,13 @@ on:
         default: true
         description: 'Release docker image if there is Docker file'
       mode:
-        required: false
-        type: string
+        type: choice
         default: 'github'
         description: 'Release mode (github or central)'
+        required: true
+        options:
+          - github
+          - central
       dry-run:
         required: false
         type: boolean
