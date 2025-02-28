@@ -36,6 +36,11 @@ on:
         type: boolean
         default: true
         description: 'Release docker image if there is Docker file'
+      mode:
+        required: false
+        type: string
+        default: 'github'
+        description: 'Release mode (github or central)'
       dry-run:
         required: false
         type: boolean
@@ -136,8 +141,8 @@ jobs:
       artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
       server-id: "central"
     secrets:
-      maven-username: ${{ secrets.MAVEN_USER }}
-      maven-token: ${{ secrets.MAVEN_PASSWORD }}
+      maven-username: ${{ inputs.mode == 'github' && github.actor || secrets.MAVEN_USER }}
+      maven-token: ${{ inputs.mode == 'github' && github.GITHIB_TOKEN || secrets.MAVEN_PASSWORD }}
       gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
