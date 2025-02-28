@@ -1,0 +1,14 @@
+name: Get Package Version
+
+on:
+    workflow_dispatch:
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get package versions (пример)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/orgs/nookyo/packages/mvn/qubership-nifi/versions" > versions.json

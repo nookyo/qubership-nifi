@@ -61,7 +61,6 @@
     </dependencies>
 
     <profiles>
-
         <profile>
             <id>central</id>
             <activation>
@@ -86,7 +85,6 @@
                 <repository>
                     <id>central</id>
                     <name>Central Maven Repository</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
                 </repository>
             </distributionManagement>
         </profile>
