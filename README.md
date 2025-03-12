@@ -10,8 +10,8 @@ Compared with Apache NiFi it supports:
 
 ## Installation
 
-1. Create `docker-compose.yaml` file with contents (where `<image>` should be replaced with qubership-nifi's image):
-```
+1. Create `docker-compose.yaml` file with contents (where `<image>` should be replaced with qubership-nifi's image, `<some key value>` should be replaced with some string at least 12 characters in length):
+```YAML
 services:
   nifi:
     image: <image>
@@ -22,7 +22,7 @@ services:
       - CONSUL_ENABLED=true
       - CONSUL_URL=consul:8500
       - AUTH=none
-      - NIFI_NEW_SENSITIVE_KEY=Abcdefghjkl12
+      - NIFI_NEW_SENSITIVE_KEY=<some key value>
     container_name: nifi
   consul:
     image: hashicorp/consul:1.20
@@ -62,7 +62,7 @@ To change NiFi properties:
 1. Change the NiFi properties in Consul as per your requirements.
 2. Restart qubership-nifi.
 
-The detailed description of all supported NiFi properties is available in the Apache's NiFi System [Administrator's Guide](https://nifi.apache.org/docs/nifi-docs/html/administration-guide.html).
+The detailed description of all supported NiFi properties is available in the Apache NiFi System [Administrator's Guide](https://nifi.apache.org/docs/nifi-docs/html/administration-guide.html).
 
 ### Configuration restore
 

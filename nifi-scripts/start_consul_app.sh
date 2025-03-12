@@ -18,7 +18,9 @@
 # shellcheck disable=SC2086
 . /opt/nifi/scripts/logging_api.sh
 
-"$JAVA_HOME"/bin/java ${CONSUL_CONFIG_JAVA_OPTIONS} \
+info "Starting consul app with options: $CONSUL_CONFIG_JAVA_OPTIONS"
+eval "$JAVA_HOME"/bin/java "$CONSUL_CONFIG_JAVA_OPTIONS" \
     -jar "$NIFI_HOME"/utility-lib/qubership-consul-application.jar org.qubership.cloud.nifi.config.NifiPropertiesLookup &
-
 consul_pid=$!
+
+info "Consul application pid: $consul_pid"

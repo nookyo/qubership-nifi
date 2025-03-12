@@ -16,16 +16,25 @@
 
 package org.qubership.nifi.service;
 
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.nifi.lookup.LookupFailureException;
 import org.apache.nifi.reporting.InitializationException;
-import org.apache.nifi.serialization.record.*;
+import org.apache.nifi.serialization.record.MockRecordParser;
+import org.apache.nifi.serialization.record.Record;
+import org.apache.nifi.serialization.record.RecordFieldType;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +47,10 @@ public class HttpLookupServiceTest {
 
     private static final String JSON_TYPE = "application/json";
 
+    /**
+     * Setups test.
+     * @throws InitializationException
+     */
     @BeforeEach
     public void setup() throws InitializationException {
         recordReader = new MockRecordParser();
@@ -49,11 +62,16 @@ public class HttpLookupServiceTest {
         runner.setProperty("Lookup Service", "lookupService");
     }
 
+    /**
+     * Simple lookup test.
+     * @throws LookupFailureException
+     * @throws InitializationException
+     */
     @Test
     public void testSimpleLookup() throws LookupFailureException, InitializationException {
 
         runner.setProperty(lookupService, HttpLookupService.URL, "http://${host}:${test.url.port}");
-        runner.setProperty(lookupService,"Authorization", "${token.key} ${value}");
+        runner.setProperty(lookupService, "Authorization", "${token.key} ${value}");
         runner.enableControllerService(lookupService);
         runner.enableControllerService(recordReader);
 
@@ -63,7 +81,7 @@ public class HttpLookupServiceTest {
 
         recordReader.addRecord("Test 1", 1, "Test 21");
         recordReader.addRecord("Test 2", 2, "Test 22");
-        recordReader.addRecord("Test 3", 3, "Test 23");
+        recordReader.addRecord("Test 3", 1 + 2, "Test 23");
 
         Map<String, String> attributes = new HashMap<>();
         attributes.put("test.url.port", "1234");
@@ -72,8 +90,9 @@ public class HttpLookupServiceTest {
         coordinates.put("host", "localhost");
         coordinates.put("value", "1234");
 
-        lookupService.response = buildResponse(200);
-        Optional<List<org.apache.nifi.serialization.record.Record>> result = lookupService.lookup(coordinates, attributes);
+        final int successHttpCode = 200;
+        lookupService.response = buildResponse(successHttpCode);
+        Optional<List<Record>> result = lookupService.lookup(coordinates, attributes);
 
         assertEquals("http://localhost:1234/", lookupService.getUrl());
         assertEquals("Bearer 1234", lookupService.getHeaders().get("Authorization").get(0));
@@ -81,10 +100,14 @@ public class HttpLookupServiceTest {
         assertTrue(result.isPresent());
         List<org.apache.nifi.serialization.record.Record> record = result.get();
         assertEquals("Test 1", record.get(0).getAsString("1"));
-        assertEquals(new Integer(1), record.get(0).getAsInt("2"));
+        assertEquals(Integer.valueOf(1), record.get(0).getAsInt("2"));
         assertEquals("Test 21", record.get(0).getAsString("3"));
     }
 
+    /**
+     * Tests for invalid response.
+     * @throws LookupFailureException
+     */
     @Test
     public void testInvalidResponse() throws LookupFailureException {
 
@@ -92,21 +115,20 @@ public class HttpLookupServiceTest {
         runner.enableControllerService(lookupService);
         runner.enableControllerService(recordReader);
 
-
-        lookupService.response = buildResponse(404);
+        final int notFoundHttpCode = 404;
+        lookupService.response = buildResponse(notFoundHttpCode);
 
         Map<String, Object> coordinates = new HashMap<>();
         coordinates.put("host", "localhost");
 
         assertThrows(LookupFailureException.class, () -> lookupService.lookup(coordinates));
-
     }
 
     private Response buildResponse(Integer code) {
         return new Response.Builder()
                 .code(code)
                 .body(
-                        ResponseBody.create(MediaType.parse(HttpLookupServiceTest.JSON_TYPE), "{}")
+                    ResponseBody.create(MediaType.parse(HttpLookupServiceTest.JSON_TYPE), "{}")
                 )
                 .message("Test")
                 .protocol(Protocol.HTTP_1_1)
