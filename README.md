@@ -10,6 +10,8 @@ Compared with Apache NiFi it supports:
 
 ## Installation
 
+### Run in qubership-nifi in plain mode
+
 1. Create `docker-compose.yaml` file with contents (where `<image>` should be replaced with qubership-nifi's image, `<some key value>` should be replaced with some string at least 12 characters in length):
 ```YAML
 services:
@@ -30,8 +32,13 @@ services:
       - 127.0.0.1:18500:8500
     container_name: consul
 ```
-2. Run `docker compose -f docker-compose.yaml create`
-3. Run `docker compose -f docker-compose.yaml start`
+2. Run `docker compose -f docker-compose.yaml up`
+
+### Run in qubership-nifi in tls mode
+
+1. Copy the [`docker-compose.yaml`](dev/tls/docker-compose.yml) and [`.env`](dev/tls/.env) files to a local directory
+2. In the `.env` file set up values for all variables
+3. Run `docker compose -f docker-compose.yaml up`
 
 ## User Guide
 
