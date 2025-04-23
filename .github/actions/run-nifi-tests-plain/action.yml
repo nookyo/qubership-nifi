@@ -17,18 +17,21 @@ runs:
         . .github/workflows/sh/nifi-lib.sh
         prepare_sens_key
         prepare_results_dir "${{ inputs.results-dir }}"
+        create_docker_env_file_plain
+        mkdir -p ./temp-vol/nifi/per-conf/
+        chmod -R 777 ./temp-vol
     - name: Run local nifi
       shell: bash
       run: |
         export NIFI_SENSITIVE_KEY=$(cat ./nifi-sens-key.tmp)
         echo "Starting containers..."
-        docker compose -f .github/docker/plain/docker-compose.yaml up -d
+        docker compose -f .github/docker/plain/docker-compose.yaml --env-file ./docker.env up -d
     - name: Wait for nifi container to start
       shell: bash
       continue-on-error: true
       run: |
         . .github/workflows/sh/nifi-lib.sh
-        wait_nifi_container "15" "60" "127.0.0.1" "8080" "false" "local-nifi-plain" "${{ inputs.results-dir }}"
+        wait_nifi_container "15" "60" "127.0.0.1" "8080" "false" ".github/docker/plain/docker-compose.yaml" "${{ inputs.results-dir }}"
     - name: Test log level configuration
       shell: bash
       continue-on-error: true
@@ -51,10 +54,27 @@ runs:
         env-name: 'NiFi_AT.json.postman_environment'
         results-dir: '${{ inputs.results-dir }}'
         short-name: 'processors'
+    - name: Run configuration restore tests (Success case)
+      continue-on-error: true
+      uses: ./.github/actions/run-conf-restore-test
+      with:
+        results-dir: '${{ inputs.results-dir }}'
+        docker-compose-path: '.github/docker/plain/docker-compose.yaml'
+        tls-mode: 'false'
+        success-scenario: 'true'
+    - name: Run configuration restore tests (Error case)
+      continue-on-error: true
+      uses: ./.github/actions/run-conf-restore-test
+      with:
+        results-dir: '${{ inputs.results-dir }}'
+        docker-compose-path: '.github/docker/plain/docker-compose.yaml'
+        tls-mode: 'false'
+        success-scenario: 'false'
     - name: Cleanup after tests
       shell: bash
       continue-on-error: true
       run: |
         export NIFI_SENSITIVE_KEY=$(cat ./nifi-sens-key.tmp)
         echo "Stopping and removing containers"
-        docker compose -f .github/docker/plain/docker-compose.yaml down
+        docker compose -f .github/docker/plain/docker-compose.yaml --env-file ./docker.env down -v
+        sudo rm -rf ./temp-vol/
