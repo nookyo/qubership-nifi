@@ -21,11 +21,13 @@ runs:
         create_docker_env_file
         create_global_vars_file
         mkdir -p ./temp-vol/tls-cert/
+        mkdir -p ./temp-vol/tls-cert/ca/
         mkdir -p ./temp-vol/tls-cert/nifi/
         mkdir -p ./temp-vol/tls-cert/nifi-registry/
         mkdir -p ./temp-vol/nifi/per-conf/
         mkdir -p ./temp-vol/pg-db/
         chmod -R 777 ./temp-vol
+        generate_add_nifi_certs
     - name: Run local nifi
       shell: bash
       run: |
