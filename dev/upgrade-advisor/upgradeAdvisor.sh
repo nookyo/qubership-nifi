@@ -8,6 +8,21 @@ handle_error() {
     exit 1
 }
 
+delete_tmp_file() {
+    rm -f ./summary_flow.txt
+    rm -f ./deprecatedComponents.json
+}
+
+get_short_found_files() {
+    local fullFileName=$1
+    if [[ "$pathToExports" != "." ]]; then
+      shortFlowName="${fullFileName//$pathToExports/}"
+    else
+      shortFlowName="$fullFileName"
+    fi
+    echo "$shortFlowName"
+}
+
 deprecatedComponents='{
     "org.apache.nifi.rules.handlers.ActionHandlerLookup": {
         "level": "Error",
@@ -812,21 +827,23 @@ fi
 echo "Start Upgrade Advisor"
 mapfile -t exportFlow < <(find "$pathToExports" -type f -name "*.json" | sort)
 
+echo "$deprecatedComponents" > deprecatedComponents.json
+
 echo "Flow name${csvSeparator}Level${csvSeparator}Issue${csvSeparator}Solution${csvSeparator}Required NiFi version for solution${csvSeparator}Processor${csvSeparator}Process Group" >"$reportFileName"
 
 for flowName in "${exportFlow[@]}"; do
-    shortFlowName="${flowName//$pathToExports/}"
+    shortFlowName=$(get_short_found_files "$flowName")
     echo "Current flowName - $flowName, shortFlowName - $shortFlowName"
 
     echo "Checking for Deprecated Components in Exported Flow - $flowName"
-    jq -r --arg flowName "${shortFlowName}" --arg csvSeparator "${csvSeparator}" --argjson depracatedList "$deprecatedComponents" 'walk(
+    jq -r --arg flowName "${shortFlowName}" --arg csvSeparator "${csvSeparator}" --slurpfile depracatedList deprecatedComponents.json 'walk(
         if type == "object" and has("componentType") and .componentType == "PROCESS_GROUP" then .name as $groupName | .controllerServices = [ .controllerServices[] | .groupName = $groupName ] | .processors = [ .processors[] | .groupName = $groupName ]
-        else if type == "object" and has("type") and .type != null and $depracatedList[.type] != null
+        else if type == "object" and has("type") and .type != null and $depracatedList[0][.type] != null
             then
-                .checkSolution = $depracatedList[.type].solution |
-                .checkIssue = $depracatedList[.type].issue |
-                .checkLevel = $depracatedList[.type].level |
-                .checkVersion = $depracatedList[.type].version?
+                .checkSolution = $depracatedList[0][.type].solution |
+                .checkIssue = $depracatedList[0][.type].issue |
+                .checkLevel = $depracatedList[0][.type].level |
+                .checkVersion = $depracatedList[0][.type].version?
             else .
         end
         end
@@ -900,12 +917,12 @@ for flowName in "${exportFlow[@]}"; do
 done
 
 echo "Checking the use of deprecated Reporting Task"
-mapfile -t reportTaskTypes < <(echo "$deprecatedReportingTask" | jq -r 'keys[]')
+mapfile -t reportTaskTypes < <(jq -r 'keys[]' <<< "$deprecatedReportingTask" | tr -d '\r')
 
 for repTask in "${reportTaskTypes[@]}"; do
-    foundFiles=$(grep -rlF "$repTask" "$pathToExports" 2>/dev/null)
+    foundFiles=$(find "$pathToExports" -type f ! -name "upgradeAdvisor.sh" -exec grep -l "$repTask" {} \;)
     if [ -n "$foundFiles" ]; then
-        shortfoundFiles="${foundFiles//$pathToExports/}"
+        shortfoundFiles=$(get_short_found_files "$foundFiles")
         echo "$deprecatedReportingTask" | jq -r --arg repTask "$repTask" --arg fileName "${shortfoundFiles}" --arg csvSeparator "${csvSeparator}" '$fileName + $csvSeparator + .[$repTask].level + $csvSeparator + .[$repTask].issue + $csvSeparator +
         "\"" + .[$repTask].solution + "\"" + $csvSeparator +
         "\"" + .checkVersion + "\"" + $csvSeparator +
@@ -915,9 +932,8 @@ for repTask in "${reportTaskTypes[@]}"; do
 done
 
 #output summary
-
 for flowName in "${exportFlow[@]}"; do
-    shortFlowName="${flowName//$pathToExports/}"
+    shortFlowName=$(get_short_found_files "$flowName")
     if grep -q "$shortFlowName" "$reportFileName"; then
         echo "- $shortFlowName - Failed" >>./summary_flow.txt
     else
@@ -938,6 +954,5 @@ else
     echo "See report '$reportFileName' for more details."
 fi
 
-rm -f ./summary_flow.txt
-
+delete_tmp_file
 echo "Finish Update Advisor"
