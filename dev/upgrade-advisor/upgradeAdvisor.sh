@@ -16,9 +16,9 @@ delete_tmp_file() {
 get_short_found_files() {
     local fullFileName=$1
     if [[ "$pathToExports" != "." ]]; then
-      shortFlowName="${fullFileName//$pathToExports/}"
+        shortFlowName="${fullFileName//$pathToExports/}"
     else
-      shortFlowName="$fullFileName"
+        shortFlowName="$fullFileName"
     fi
     echo "$shortFlowName"
 }
@@ -827,7 +827,7 @@ fi
 echo "Start Upgrade Advisor"
 mapfile -t exportFlow < <(find "$pathToExports" -type f -name "*.json" | sort)
 
-echo "$deprecatedComponents" > deprecatedComponents.json
+echo "$deprecatedComponents" >deprecatedComponents.json
 
 echo "Flow name${csvSeparator}Level${csvSeparator}Issue${csvSeparator}Solution${csvSeparator}Required NiFi version for solution${csvSeparator}Processor${csvSeparator}Process Group" >"$reportFileName"
 
@@ -917,7 +917,7 @@ for flowName in "${exportFlow[@]}"; do
 done
 
 echo "Checking the use of deprecated Reporting Task"
-mapfile -t reportTaskTypes < <(jq -r 'keys[]' <<< "$deprecatedReportingTask" | tr -d '\r')
+mapfile -t reportTaskTypes < <(jq -r 'keys[]' <<<"$deprecatedReportingTask" | tr -d '\r')
 
 for repTask in "${reportTaskTypes[@]}"; do
     foundFiles=$(find "$pathToExports" -type f ! -name "upgradeAdvisor.sh" -exec grep -l "$repTask" {} \;)
