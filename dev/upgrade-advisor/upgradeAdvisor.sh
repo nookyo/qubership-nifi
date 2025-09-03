@@ -15,10 +15,16 @@ delete_tmp_file() {
 
 get_short_found_files() {
     local fullFileName=$1
+    if [[ "$fullFileName" == *"\\"* ]]; then
+        fullFileName="${fullFileName//\\/\/}"
+    fi
     if [[ "$pathToExports" != "." ]]; then
         shortFlowName="${fullFileName//$pathToExports/}"
     else
         shortFlowName="$fullFileName"
+    fi
+    if [[ "$shortFlowName" == /* ]]; then
+        shortFlowName="${shortFlowName#/}"
     fi
     echo "$shortFlowName"
 }
@@ -799,6 +805,10 @@ declare -a exportFlow
 if [ -z "$pathToExports" ]; then
     echo "The first argument - 'pathToExports' is not set. The default value - '.' will be used."
     pathToExports="."
+else
+    if [[ "$pathToExports" == *"\\"* ]]; then
+        pathToExports="${pathToExports//\\/\/}"
+    fi
 fi
 
 if [ -z "$csvSeparator" ]; then
@@ -934,7 +944,7 @@ done
 #output summary
 for flowName in "${exportFlow[@]}"; do
     shortFlowName=$(get_short_found_files "$flowName")
-    if grep -q "$shortFlowName" "$reportFileName"; then
+    if grep -qF "$shortFlowName" "$reportFileName"; then
         echo "- $shortFlowName - Failed" >>./summary_flow.txt
     else
         echo "- $shortFlowName - Success" >>./summary_flow.txt
