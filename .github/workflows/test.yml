@@ -8,10 +8,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Generate Matrix via jq
+      - name: Generate Configuration via jq
         id: generate
         run: |
-          MATRIX=$(jq -c '
+          CONFIG=$(jq -c '
             (.registry // "") as $reg
             | (.security // {}) as $globalSec
             | (.defaults // {}) as $def
@@ -38,10 +38,10 @@ jobs:
               ]
           ' .qubership/dev-docker.cfg)
 
-          echo "Matrix generated (pretty):"
-          echo "$MATRIX" | jq .
+          echo "Configuration generated:"
+          echo "$CONFIG" | jq .
 
-          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+          echo "configuration=$CONFIG" >> "$GITHUB_OUTPUT"
 
       # - name: Generate Matrix via jq
       #   id: generate
