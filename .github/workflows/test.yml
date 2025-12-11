@@ -1,6 +1,12 @@
 name: Test Configuration
 on:
   workflow_dispatch:
+    inputs:
+      file-path:
+        description: 'A dummy input to trigger the workflow'
+        required: false
+        default: '.qubership/dev-docker.cfg'
+
 jobs:
   test-configuration:
     runs-on: ubuntu-latest
@@ -10,6 +16,8 @@ jobs:
 
       - name: Generate Configuration via jq
         id: generate
+        env:
+          FILE_PATH: ${{ inputs.file-path }}
         run: |
           CONFIG=$(jq -c '
             (.registry // "") as $reg
@@ -38,7 +46,7 @@ jobs:
                       | with_entries(.key = ("security_" + .key))
                     )
               ]
-          ' .qubership/dev-docker.cfg)
+          ' ${FILE_PATH})
 
           echo "Config (pretty):"
           echo "$CONFIG" | jq .
