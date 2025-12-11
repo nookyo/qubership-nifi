@@ -12,38 +12,36 @@ jobs:
         id: generate
         run: |
           MATRIX=$(jq -c '
-          (.registry // "") as $reg
-          | (.security // {}) as $globalSec
-          | (.defaults // {}) as $def
-          | [
-              .components[]
-              | . as $c
-              | ($globalSec + ($c.security // {})) as $sec
-              | {
-                  name: $c.name,
-                  image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
-                  registry: $reg,
+            (.registry // "") as $reg
+            | (.security // {}) as $globalSec
+            | (.defaults // {}) as $def
+            | [
+                .components[]
+                | . as $c
+                | ($globalSec + ($c.security // {})) as $sec
+                | {
+                    name: $c.name,
+                    image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
+                    registry: $reg,
 
-                  dockerfile: ($c.dockerfile // $def.dockerfile// "Dockerfile"),
+                    dockerfile: ($c.dockerfile // $def.dockerfile // "Dockerfile"),
+                    context: ($c.context // $def.context // "." | if . == "" then "." else . end),
+                    tags: ($c.tags // $def.tags // "latest"),
+                    platforms: ($c.platforms // $def.platforms // "linux/amd64" | gsub("\\s+"; ""))
 
-                  context: ($c.context // $def.context // "." | if . == "" then "." else . end),
+                  }
+                  +
+                  (
+                    $sec
+                    | with_entries(.key = ("security_" + .key))
+                  )
+              ]
+          ' .qubership/dev-docker.cfg)
 
-                  tags: ($c.tags // $def.tags // "latest"),
+          echo "Matrix generated (pretty):"
+          echo "$MATRIX" | jq .
 
-                  platforms: ($c.platforms // $def.platforms // "linux/amd64" | gsub("\\s+"; ""))
-                }
-                +
-                (
-                  $sec
-                  | with_entries(.key = ("security_" + .key))
-                )
-            ]
-
-           echo "Matrix generated:"
-           echo "$MATRIX"
-
-           # Save result as GitHub Action output
-           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
 
       # - name: Generate Matrix via jq
       #   id: generate
