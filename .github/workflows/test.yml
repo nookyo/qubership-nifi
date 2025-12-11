@@ -37,7 +37,7 @@ jobs:
           ' .qubership/dev-docker.cfg)
 
           echo "Matrix generated:"
-          echo "$MATRIX"
+          echo "$MATRIX" | jq .
 
           # Save result as GitHub Action output
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
