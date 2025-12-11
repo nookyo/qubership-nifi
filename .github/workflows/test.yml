@@ -19,31 +19,31 @@ jobs:
             | [
                 (.components // [])[]
                 | . as $c
-
                 | if ($c | has("name") | not) or ($c.name == null) or ($c.name == "") then
                     error("component.name is required")
                   else
                     $c
                   end
                 | . as $c
-
                 | ($globalSec + ($c.security // {})) as $sec
-
                 | ($def + $c) as $merged
-
                 | {
                     name: $c.name,
                     image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
                     registry: $reg
                   }
-
                   + ($merged | del(.name, .security))
-
                   + (
                       $sec
                       | with_entries(.key = ("security_" + .key))
                     )
               ]
+          ' .qubership/dev-docker.cfg)
+
+          echo "Config (pretty):"
+          echo "$CONFIG" | jq .
+
+          echo "config=$CONFIG" >> "$GITHUB_OUTPUT"
 
       # - name: Generate Matrix via jq
       #   id: generate
