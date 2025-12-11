@@ -48,7 +48,7 @@ jobs:
               ]
           ' ${FILE_PATH})
 
-          echo "Config (pretty):"
+          echo "Configuration (pretty):"
           echo "$CONFIG" | jq .
 
           echo "config=$CONFIG" >> "$GITHUB_OUTPUT"
