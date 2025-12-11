@@ -15,33 +15,35 @@ jobs:
             (.registry // "") as $reg
             | (.security // {}) as $globalSec
             | (.defaults // {}) as $def
+
             | [
-                .components[]
+                (.components // [])[]
                 | . as $c
+
+                | if ($c | has("name") | not) or ($c.name == null) or ($c.name == "") then
+                    error("component.name is required")
+                  else
+                    $c
+                  end
+                | . as $c
+
                 | ($globalSec + ($c.security // {})) as $sec
+
+                | ($def + $c) as $merged
+
                 | {
                     name: $c.name,
                     image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
-                    registry: $reg,
-
-                    dockerfile: ($c.dockerfile // $def.dockerfile // "Dockerfile"),
-                    context: ($c.context // $def.context // "." | if . == "" then "." else . end),
-                    tags: ($c.tags // $def.tags // "latest"),
-                    platforms: ($c.platforms // $def.platforms // "linux/amd64" | gsub("\\s+"; ""))
-
+                    registry: $reg
                   }
-                  +
-                  (
-                    $sec
-                    | with_entries(.key = ("security_" + .key))
-                  )
+
+                  + ($merged | del(.name, .security))
+
+                  + (
+                      $sec
+                      | with_entries(.key = ("security_" + .key))
+                    )
               ]
-          ' .qubership/dev-docker.cfg)
-
-          echo "Configuration generated:"
-          echo "$CONFIG" | jq .
-
-          echo "configuration=$CONFIG" >> "$GITHUB_OUTPUT"
 
       # - name: Generate Matrix via jq
       #   id: generate
