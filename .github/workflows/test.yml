@@ -27,8 +27,9 @@ jobs:
         run: |
           echo "Resolved Configuration:"
           FILTERED=$(echo "$CONFIG_JSON" | jq -c '[.[] | select(.security_scan == true)]')
+          echo "filtered=$FILTERED" >> $GITHUB_OUTPUT
 
       - name: Display Resolved
         run: |
           echo "Resolved"
-          echo '${{ steps.display-config.outputs.matrix }}' | jq '.[]'
+          echo '${{ steps.display-config.outputs.filtered }}' | jq '.[]'
