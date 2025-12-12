@@ -22,112 +22,13 @@ jobs:
 
       - name: Display Resolved Configuration
         id: display-config
+        env:
+          CONFIG_JSON: ${{ steps.config.outputs.config }}
         run: |
           echo "Resolved Configuration:"
-          echo 'CONFIG=$(${{ steps.config.outputs.config }}' | jq '.[] | select(.security_scan == true))'
+          FILTERED=$(echo "$CONFIG_JSON" | jq -c '[.[] | select(.security_scan == true)]')
 
       - name: Display Resolved
         run: |
-          echo "Resolved Matrix:"
-          echo 'MATRIX=$(${{ steps.display-config.outputs.matrix }}' | jq '.[]'
-
-
-      # - name: Generate Configuration via jq
-      #   id: generate
-      #   env:
-      #     FILE_PATH: ${{ inputs.file-path }}
-      #   run: |
-      #     CONFIG=$(jq -c '
-      #       (.registry // "") as $reg
-      #       | (.security // {}) as $globalSec
-      #       | (.defaults // {}) as $def
-
-      #       | [
-      #           (.components // [])[]
-      #           | . as $c
-      #           | if ($c | has("name") | not) or ($c.name == null) or ($c.name == "") then
-      #               error("component.name is required")
-      #             else
-      #               $c
-      #             end
-      #           | . as $c
-      #           | ($globalSec + ($c.security // {})) as $sec
-      #           | ($def + $c) as $merged
-      #           | {
-      #               name: $c.name,
-      #               image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
-      #               registry: $reg
-      #             }
-      #             + ($merged | del(.name, .security))
-      #             + (
-      #                 $sec
-      #                 | with_entries(.key = ("security_" + .key))
-      #               )
-      #         ]
-      #     ' ${FILE_PATH})
-
-      #     echo "Configuration (pretty):"
-      #     echo "$CONFIG" | jq .
-
-      #     echo "config=$CONFIG" >> "$GITHUB_OUTPUT"
-
-      # - name: Generate Matrix via jq
-      #   id: generate
-      #   run: |
-      #     MATRIX=$(jq -c '
-      #       (.registry // "") as $reg
-      #       | (.platforms // "linux/amd64") as $globalPlatforms
-      #       | (.security // {}) as $globalSec
-      #       | [
-      #           .components[]
-      #           | . as $c
-      #           | ($globalSec + ($c.security // {})) as $sec
-      #           | {
-      #               name: $c.name,
-      #               image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
-      #               registry: $reg,
-      #               dockerfile: ($c.dockerfile // $c.file // "Dockerfile"),
-      #               context: ($c.context // "." | if . == "" then "." else . end),
-      #               tags: ($c.tags // "latest"),
-      #               platforms: ($c.platforms // $globalPlatforms | gsub("\\s+"; ""))
-      #           }
-      #           +
-      #           (
-      #               $sec
-      #               | with_entries(.key = ("security_" + .key))
-      #           )
-      #         ]
-      #     ' .qubership/dev-docker.cfg)
-
-      #     echo "Matrix generated:"
-      #     echo "$MATRIX"
-
-      #     # Save result as GitHub Action output
-      #     echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-
-    #   - name: Run configuration tests
-    #     uses: actions/github-script@v6
-    #     with:
-    #       script: |
-    #         const fs = require('fs');
-    #         const path = '.github/workflows/security-scan.yml';
-    #         const yaml = require('js-yaml');
-
-    #         try {
-    #           const fileContents = fs.readFileSync(path, 'utf8');
-    #           const data = yaml.load(fileContents);
-
-    #           // Basic validation checks
-    #           if (!data.on || !data.jobs) {
-    #             throw new Error('Invalid workflow configuration: Missing "on" or "jobs" section.');
-    #           }
-
-    #           if (!data.jobs['security-scan']) {
-    #             throw new Error('Invalid workflow configuration: Missing "security-scan" job.');
-    #           }
-
-    #           console.log('Configuration is valid.');
-    #         } catch (e) {
-    #           console.error(`Error validating configuration: ${e.message}`);
-    #           throw e;
-    #         }
+          echo "Resolved"
+          echo '${{ steps.display-config.outputs.matrix }}' | jq '.[]'
