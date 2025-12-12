@@ -79,6 +79,8 @@ jobs:
       #   run: |
       #     echo "No packages found in GHCR for this repository."
       #     exit 1
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Get Configuration File
         uses: nookyo/qubership-workflow-hub/actions/docker-config-resolver@main
