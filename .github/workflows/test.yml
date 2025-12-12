@@ -23,7 +23,7 @@ jobs:
       - name: Display Resolved Configuration
         run: |
           echo "Resolved Configuration:"
-          echo "${{ steps.config.outputs.config }}" | jq .
+          echo ${{ steps.config.outputs.config }} | jq .
 
       # - name: Generate Configuration via jq
       #   id: generate
