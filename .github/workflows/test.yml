@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       file-path:
-        description: 'A dummy input to trigger the workflow'
+        description: "A dummy input to trigger the workflow"
         required: false
-        default: '.qubership/dev-docker.cfg'
+        default: ".qubership/dev-docker.cfg"
 
 jobs:
   test-configuration:
@@ -25,9 +25,17 @@ jobs:
         env:
           CONFIG_JSON: ${{ steps.config.outputs.config }}
         run: |
+          set -euo pipefail
           echo "Resolved Configuration:"
+
           FILTERED=$(echo "$CONFIG_JSON" | jq -c '[.[] | select(.security_scan == true)]')
-          echo "filtered=$FILTERED" >> $GITHUB_OUTPUT
+
+          echo "Filtered pretty:"
+          echo "$FILTERED" | jq .
+
+          echo "filtered=$FILTERED" >> "$GITHUB_OUTPUT"
+
+          echo "Wrote output 'filtered' (length): ${#FILTERED}"
 
       - name: Display Resolved
         run: |
