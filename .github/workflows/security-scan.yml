@@ -96,6 +96,10 @@ jobs:
           set -euo pipefail
           echo "Resolved Configuration:"
           FILTERED=$(echo "$CONFIG_JSON" | jq -c '[.[] | select(.security_scan == true)]')
+
+          echo "Filtered pretty:"
+          echo "$FILTERED" | jq .
+
           echo "filtered=$FILTERED" >> "$GITHUB_OUTPUT"
 
   security-scan-matrix:
