@@ -47,7 +47,7 @@ on:
         default: true
         type: boolean
   schedule:
-    - cron: "0 3 * * 0" # every Sunday at 03:00 UTC
+    - cron: "0/5 0 * * 0" # every Sunday at 03:00 UTC
 
 jobs:
   debug-packages:
@@ -55,30 +55,9 @@ jobs:
     permissions:
       packages: read
     outputs:
-      # packages: ${{ steps.ghcr.outputs.packages }}
-      # has-packages: ${{ steps.ghcr.outputs.has-packages }}
       packages: ${{ steps.display-config.outputs.filtered }}
     steps:
-      # - name: List GHCR packages for this repo
-      #   id: ghcr
-      #   uses: Netcracker/qubership-workflow-hub/actions/ghcr-discover-repo-packages@396774180000abdb825cbf150b56cc59c6913db8 #v2.0.5
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
 
-      # - name: Print packages
-      #   run: echo "$OUTPUT_PACKAGES" | jq '.'
-      #   env:
-      #     OUTPUT_PACKAGES: "${{ steps.ghcr.outputs.packages }}"
-
-      # - name: Continue only if repo has GHCR packages
-      #   if: ${{ steps.ghcr.outputs.has-packages == 'true' }}
-      #   run: echo "Packages found!"
-
-      # - name: No packages found, fail the job
-      #   if: ${{ steps.ghcr.outputs.has-packages != 'true' }}
-      #   run: |
-      #     echo "No packages found in GHCR for this repository."
-      #     exit 1
       - name: Checkout repository
         uses: actions/checkout@v6
 
@@ -131,8 +110,8 @@ jobs:
     with:
       target: ${{ inputs.target || 'docker' }}
       image: ${{ inputs.image }}
-      only-high-critical: ${{ inputs.only-high-critical || true }}
-      trivy-scan: ${{ inputs.trivy-scan || true }}
-      grype-scan: ${{ inputs.grype-scan || true }}
-      only-fixed: ${{ inputs.only-fixed || true }}
-      continue-on-error: ${{ inputs.continue-on-error || true }}
+      only-high-critical: ${{ inputs.only-high-critical || matrix.package.security_only_high_critical || true }}
+      trivy-scan: ${{ inputs.trivy-scan || matrix.package.security_trivy_scan || true }}
+      grype-scan: ${{ inputs.grype-scan || matrix.package.security_qrype-scan || true }}
+      only-fixed: ${{ inputs.only-fixed || matrix.package.security_only-fixed || true }}
+      continue-on-error: ${{ inputs.continue-on-error || matrix.package.security_continue_on_error || true }}
