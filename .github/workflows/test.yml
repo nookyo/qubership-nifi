@@ -21,9 +21,16 @@ jobs:
           file-path: ${{ inputs.file-path }}
 
       - name: Display Resolved Configuration
+        id: display-config
         run: |
           echo "Resolved Configuration:"
-          echo '${{ steps.config.outputs.config }}' | jq '.[] | select(.security_scan == true)'
+          echo 'CONFIG=$(${{ steps.config.outputs.config }}' | jq '.[] | select(.security_scan == true))'
+
+      - name: Display Resolved
+        run: |
+          echo "Resolved Matrix:"
+          echo 'MATRIX=$(${{ steps.display-config.outputs.matrix }}' | jq '.[]'
+
 
       # - name: Generate Configuration via jq
       #   id: generate
