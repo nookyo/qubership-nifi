@@ -14,44 +14,55 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Generate Configuration via jq
-        id: generate
-        env:
-          FILE_PATH: ${{ inputs.file-path }}
+      - name: Get Configuration File
+        uses: nookyo/qubership-workflow-hub/actions/docker-config-resolver@main
+        id: config
+        with:
+          file-path: ${{ inputs.file-path }}
+
+      - name: Display Resolved Configuration
         run: |
-          CONFIG=$(jq -c '
-            (.registry // "") as $reg
-            | (.security // {}) as $globalSec
-            | (.defaults // {}) as $def
+          echo "Resolved Configuration:"
+          echo "${{ steps.config.outputs.config }}" | jq .
 
-            | [
-                (.components // [])[]
-                | . as $c
-                | if ($c | has("name") | not) or ($c.name == null) or ($c.name == "") then
-                    error("component.name is required")
-                  else
-                    $c
-                  end
-                | . as $c
-                | ($globalSec + ($c.security // {})) as $sec
-                | ($def + $c) as $merged
-                | {
-                    name: $c.name,
-                    image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
-                    registry: $reg
-                  }
-                  + ($merged | del(.name, .security))
-                  + (
-                      $sec
-                      | with_entries(.key = ("security_" + .key))
-                    )
-              ]
-          ' ${FILE_PATH})
+      # - name: Generate Configuration via jq
+      #   id: generate
+      #   env:
+      #     FILE_PATH: ${{ inputs.file-path }}
+      #   run: |
+      #     CONFIG=$(jq -c '
+      #       (.registry // "") as $reg
+      #       | (.security // {}) as $globalSec
+      #       | (.defaults // {}) as $def
 
-          echo "Configuration (pretty):"
-          echo "$CONFIG" | jq .
+      #       | [
+      #           (.components // [])[]
+      #           | . as $c
+      #           | if ($c | has("name") | not) or ($c.name == null) or ($c.name == "") then
+      #               error("component.name is required")
+      #             else
+      #               $c
+      #             end
+      #           | . as $c
+      #           | ($globalSec + ($c.security // {})) as $sec
+      #           | ($def + $c) as $merged
+      #           | {
+      #               name: $c.name,
+      #               image: (if $reg == "" then $c.name else ($reg + "/" + $c.name) end),
+      #               registry: $reg
+      #             }
+      #             + ($merged | del(.name, .security))
+      #             + (
+      #                 $sec
+      #                 | with_entries(.key = ("security_" + .key))
+      #               )
+      #         ]
+      #     ' ${FILE_PATH})
 
-          echo "config=$CONFIG" >> "$GITHUB_OUTPUT"
+      #     echo "Configuration (pretty):"
+      #     echo "$CONFIG" | jq .
+
+      #     echo "config=$CONFIG" >> "$GITHUB_OUTPUT"
 
       # - name: Generate Matrix via jq
       #   id: generate
