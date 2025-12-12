@@ -55,29 +55,46 @@ jobs:
     permissions:
       packages: read
     outputs:
-      packages: ${{ steps.ghcr.outputs.packages }}
-      has-packages: ${{ steps.ghcr.outputs.has-packages }}
+      # packages: ${{ steps.ghcr.outputs.packages }}
+      # has-packages: ${{ steps.ghcr.outputs.has-packages }}
+      packages: ${{ steps.display-config.outputs.filtered }}
     steps:
-      - name: List GHCR packages for this repo
-        id: ghcr
-        uses: Netcracker/qubership-workflow-hub/actions/ghcr-discover-repo-packages@396774180000abdb825cbf150b56cc59c6913db8 #v2.0.5
+      # - name: List GHCR packages for this repo
+      #   id: ghcr
+      #   uses: Netcracker/qubership-workflow-hub/actions/ghcr-discover-repo-packages@396774180000abdb825cbf150b56cc59c6913db8 #v2.0.5
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+
+      # - name: Print packages
+      #   run: echo "$OUTPUT_PACKAGES" | jq '.'
+      #   env:
+      #     OUTPUT_PACKAGES: "${{ steps.ghcr.outputs.packages }}"
+
+      # - name: Continue only if repo has GHCR packages
+      #   if: ${{ steps.ghcr.outputs.has-packages == 'true' }}
+      #   run: echo "Packages found!"
+
+      # - name: No packages found, fail the job
+      #   if: ${{ steps.ghcr.outputs.has-packages != 'true' }}
+      #   run: |
+      #     echo "No packages found in GHCR for this repository."
+      #     exit 1
+
+      - name: Get Configuration File
+        uses: nookyo/qubership-workflow-hub/actions/docker-config-resolver@main
+        id: config
+        with:
+          file-path: ".qubership/dev-docker.cfg"
+
+      - name: Display Resolved Configuration
+        id: display-config
         env:
-          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-
-      - name: Print packages
-        run: echo "$OUTPUT_PACKAGES" | jq '.'
-        env:
-          OUTPUT_PACKAGES: '${{ steps.ghcr.outputs.packages }}'
-
-      - name: Continue only if repo has GHCR packages
-        if: ${{ steps.ghcr.outputs.has-packages == 'true' }}
-        run: echo "Packages found!"
-
-      - name: No packages found, fail the job
-        if: ${{ steps.ghcr.outputs.has-packages != 'true' }}
+          CONFIG_JSON: ${{ steps.config.outputs.config }}
         run: |
-          echo "No packages found in GHCR for this repository."
-          exit 1
+          set -euo pipefail
+          echo "Resolved Configuration:"
+          FILTERED=$(echo "$CONFIG_JSON" | jq -c '[.[] | select(.security_scan == true)]')
+          echo "filtered=$FILTERED" >> "$GITHUB_OUTPUT"
 
   security-scan-matrix:
     permissions:
@@ -88,7 +105,7 @@ jobs:
     if: ${{ inputs.image == '' || inputs.image == null }}
     strategy:
       matrix:
-        package: ${{ fromJson(needs.debug-packages.outputs.packages) }}
+        package: ${{ fromJson(needs.debug-packages.outputs.images) }}
 
     name: "Run Security Scan (matrix)"
     uses: netcracker/qubership-workflow-hub/.github/workflows/re-security-scan.yml@396774180000abdb825cbf150b56cc59c6913db8 #v2.0.5
